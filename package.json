@@ -1,0 +1,11 @@
+{
+  "name": "decentralized-insurance-pool",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Initial bootstrap skeleton for the decentralized insurance pool project.",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "frontend:dev": "npm --prefix frontend run dev"
+  }
+}

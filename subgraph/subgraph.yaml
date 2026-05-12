@@ -1,0 +1,4 @@
+specVersion: 1.0.0
+description: Bootstrap subgraph skeleton for the decentralized insurance pool project.
+schema:
+  file: ./schema.graphql
