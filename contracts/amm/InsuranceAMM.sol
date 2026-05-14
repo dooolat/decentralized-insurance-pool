@@ -12,7 +12,9 @@ contract InsuranceAMM is ERC20, ReentrancyGuard {
 
     error InvalidToken();
     error InvalidAmount();
+    error InvalidRecipient();
     error InsufficientLiquidityMinted();
+    error SlippageExceeded(uint256 amountOut, uint256 minAmountOut);
     error InsufficientLiquidityBurned();
 
     uint256 public constant FEE_BPS = 30;
@@ -30,6 +32,13 @@ contract InsuranceAMM is ERC20, ReentrancyGuard {
     );
     event LiquidityRemoved(
         address indexed provider, uint256 amount0, uint256 amount1, uint256 liquidityBurned
+    );
+    event Swap(
+        address indexed sender,
+        address indexed tokenIn,
+        uint256 amountIn,
+        address indexed recipient,
+        uint256 amountOut
     );
 
     constructor(
@@ -119,6 +128,39 @@ contract InsuranceAMM is ERC20, ReentrancyGuard {
         _updateReserves();
 
         emit LiquidityRemoved(msg.sender, amount0, amount1, liquidity);
+    }
+
+    function swapExactInput(
+        address tokenIn,
+        uint256 amountIn,
+        uint256 minAmountOut,
+        address recipient
+    ) external nonReentrant returns (uint256 amountOut) {
+        if (recipient == address(0)) revert InvalidRecipient();
+        if (amountIn == 0) revert InvalidAmount();
+
+        bool zeroForOne = false;
+        if (tokenIn == address(token0)) {
+            zeroForOne = true;
+        } else if (tokenIn == address(token1)) {
+            zeroForOne = false;
+        } else {
+            revert InvalidToken();
+        }
+
+        IERC20 inputToken = zeroForOne ? token0 : token1;
+        IERC20 outputToken = zeroForOne ? token1 : token0;
+        uint256 reserveIn = zeroForOne ? _reserve0 : _reserve1;
+        uint256 reserveOut = zeroForOne ? _reserve1 : _reserve0;
+
+        inputToken.safeTransferFrom(msg.sender, address(this), amountIn);
+        amountOut = getAmountOut(amountIn, reserveIn, reserveOut);
+        if (amountOut < minAmountOut) revert SlippageExceeded(amountOut, minAmountOut);
+
+        outputToken.safeTransfer(recipient, amountOut);
+        _updateReserves();
+
+        emit Swap(msg.sender, tokenIn, amountIn, recipient, amountOut);
     }
 
     function _updateReserves() internal {
