@@ -1,4 +1,87 @@
-type BootstrapNote @entity {
+type Policy @entity(immutable: false) {
   id: ID!
-  message: String!
+  policyId: BigInt!
+  buyer: Bytes!
+  riskTypeId: BigInt!
+  premium: BigInt!
+  coverageAmount: BigInt!
+  startTime: BigInt!
+  endTime: BigInt!
+  status: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Claim @entity(immutable: true) {
+  id: ID!
+  policy: Policy!
+  recipient: Bytes!
+  payoutAmount: BigInt!
+  txHash: Bytes!
+  createdAt: BigInt!
+}
+
+type RiskType @entity(immutable: false) {
+  id: ID!
+  name: String!
+  premiumRateBps: Int!
+  maxCoverage: BigInt!
+  oracleFeed: Bytes!
+  triggerThreshold: BigInt!
+  stalenessLimit: BigInt!
+  active: Boolean!
+  updatedAt: BigInt!
+}
+
+type VaultDeposit @entity(immutable: true) {
+  id: ID!
+  caller: Bytes!
+  owner: Bytes!
+  assets: BigInt!
+  shares: BigInt!
+  txHash: Bytes!
+  createdAt: BigInt!
+}
+
+type Swap @entity(immutable: true) {
+  id: ID!
+  sender: Bytes!
+  tokenIn: Bytes!
+  amountIn: BigInt!
+  recipient: Bytes!
+  amountOut: BigInt!
+  txHash: Bytes!
+  createdAt: BigInt!
+}
+
+type LiquidityPosition @entity(immutable: false) {
+  id: ID!
+  provider: Bytes!
+  totalLiquidityMinted: BigInt!
+  netLiquidity: BigInt!
+  updatedAt: BigInt!
+}
+
+type GovernanceProposal @entity(immutable: false) {
+  id: ID!
+  proposalId: BigInt!
+  proposer: Bytes!
+  description: String!
+  state: String!
+  voteStart: BigInt!
+  voteEnd: BigInt!
+  forVotes: BigInt!
+  againstVotes: BigInt!
+  abstainVotes: BigInt!
+  updatedAt: BigInt!
+}
+
+type Vote @entity(immutable: true) {
+  id: ID!
+  proposal: GovernanceProposal!
+  voter: Bytes!
+  support: Int!
+  weight: BigInt!
+  reason: String
+  createdAt: BigInt!
 }
