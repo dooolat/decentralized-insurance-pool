@@ -30,7 +30,6 @@ contract UpgradeableInsurancePoolV1 is Initializable, UUPSUpgradeable, OwnableUp
         if (initialOwner == address(0) || collateralAsset_ == address(0)) revert InvalidAddress();
 
         __Ownable_init(initialOwner);
-        __UUPSUpgradeable_init();
 
         collateralAsset = collateralAsset_;
     }
