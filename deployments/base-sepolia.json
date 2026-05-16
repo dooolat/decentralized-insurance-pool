@@ -1,5 +1,6 @@
 {
   "network": "base-sepolia",
-  "status": "bootstrap",
-  "notes": "TODO: fill with real deployment addresses later."
+  "chainId": 84532,
+  "contracts": {},
+  "note": "Addresses will be filled after real deployment and verification."
 }
