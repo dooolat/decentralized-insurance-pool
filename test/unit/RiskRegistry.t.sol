@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import { Test } from "forge-std/Test.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { RiskRegistry } from "../../contracts/insurance/RiskRegistry.sol";
 
 contract RiskRegistryTest is Test {
@@ -14,9 +14,10 @@ contract RiskRegistryTest is Test {
 
     function setUp() public {
         registry = new RiskRegistry(admin);
+        bytes32 managerRole = registry.RISK_MANAGER_ROLE();
 
         vm.prank(admin);
-        registry.grantRole(registry.RISK_MANAGER_ROLE(), manager);
+        registry.grantRole(managerRole, manager);
     }
 
     function testAdminStartsWithManagerRole() public view {
@@ -77,12 +78,14 @@ contract RiskRegistryTest is Test {
     }
 
     function testUnauthorizedAccountCannotAddRiskType() public {
+        bytes32 riskManagerRole = registry.RISK_MANAGER_ROLE();
+
         vm.prank(stranger);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControl.AccessControlUnauthorizedAccount.selector,
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
                 stranger,
-                registry.RISK_MANAGER_ROLE()
+                riskManagerRole
             )
         );
         registry.addRiskType("BAD", 100, 100e6, makeAddr("feed"), 1, 1);
