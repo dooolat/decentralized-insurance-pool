@@ -1,12 +1,41 @@
 # Decentralized Insurance Pool
 
-Bootstrap repository for the Blockchain Technologies 2 final project.
+Option E final project for Blockchain Technologies 2.
 
-Current scope for today:
+This repository contains the smart contracts, Foundry tests, frontend scaffold,
+deployment scripts, and subgraph files for a decentralized insurance pool
+prototype.
 
-- create the repository structure
-- add empty starter contracts
-- add frontend, docs, reports, and subgraph skeletons
-- prepare `main`, `develop`, and a draft PR branch
+## Fresh Clone Setup
 
-Implementation is intentionally deferred to the next milestone.
+The Foundry dependencies in `lib/` are tracked as git submodules. After a fresh
+clone, initialize them before running backend commands.
+
+```bash
+git clone https://github.com/dooolat/decentralized-insurance-pool.git
+cd decentralized-insurance-pool
+git checkout develop
+git submodule update --init --recursive
+forge build
+forge test
+```
+
+Required submodules:
+
+- `lib/openzeppelin-contracts`
+- `lib/openzeppelin-contracts-upgradeable`
+- `lib/forge-std`
+- `lib/chainlink-brownie-contracts`
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+## Deployment Status
+
+Deployment scripts are included, but real L2 addresses should only be added
+after successful deployment and verification.
