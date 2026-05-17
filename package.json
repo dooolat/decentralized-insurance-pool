@@ -2,7 +2,7 @@
   "name": "decentralized-insurance-pool",
   "private": true,
   "version": "0.0.1",
-  "description": "Initial bootstrap skeleton for the decentralized insurance pool project.",
+  "description": "Final project repository for Option E - Decentralized Insurance Pool.",
   "scripts": {
     "build": "forge build",
     "test": "forge test",

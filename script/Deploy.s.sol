@@ -122,10 +122,10 @@ contract Deploy is Script {
             "IVS"
         );
 
-        // Current develop still contains placeholder versions of these modules.
-        // The AMM constructor remains placeholder until the dedicated AMM PR is
-        // merged, but the insurance flow modules already have their real
-        // constructors on this branch and should be deployed accordingly.
+        // Deploy the current develop contract set using environment-provided
+        // configuration. Real addresses should only be written into
+        // deployments/base-sepolia.json after a successful broadcast and
+        // verification pass.
         core.insurancePool = new InsurancePool(
             IERC20(config.collateralAsset),
             core.insuranceVault,
