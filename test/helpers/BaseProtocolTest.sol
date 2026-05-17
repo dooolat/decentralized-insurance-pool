@@ -207,7 +207,6 @@ contract MockInsurancePool is IInsurancePool {
 
         activeCoverage += coverageAmount;
         _activeCoverageByRisk[riskTypeId] += coverageAmount;
-        vault.setReservedCoverage(activeCoverage);
     }
 
     function expirePolicy(uint256 policyId) external override {
@@ -256,7 +255,6 @@ contract MockInsurancePool is IInsurancePool {
     function _releaseCoverage(uint256 riskTypeId, uint256 coverageAmount) internal {
         activeCoverage -= coverageAmount;
         _activeCoverageByRisk[riskTypeId] -= coverageAmount;
-        vault.setReservedCoverage(activeCoverage);
     }
 }
 
@@ -346,7 +344,9 @@ abstract contract BaseProtocolTest is Test {
         insuranceAmm = new MockInsuranceAMM(address(collateralToken), address(governanceToken));
 
         vm.prank(admin);
-        vault.transferOwnership(address(insurancePool));
+        vault.setInsurancePool(address(insurancePool));
+        vm.prank(admin);
+        vault.setClaimManager(address(claimManager));
         vm.prank(admin);
         insurancePool.setClaimManager(address(claimManager));
 
