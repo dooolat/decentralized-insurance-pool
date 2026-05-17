@@ -1,8 +1,10 @@
-# Gas Optimization Update (Day 4)
+# Gas Optimization Report
 
 ## Measurement Status
 
-This Day 4 document is a template and optimization notebook. It does not claim fresh benchmark numbers for the team repository unless the corresponding command is rerun on the exact branch under review.
+This document is an honest optimization notebook for the final repository state.
+It does not claim fresh benchmark numbers unless the corresponding command is
+rerun on the exact branch under review.
 
 Primary command to use later:
 
@@ -29,9 +31,11 @@ forge snapshot
 
 ## Solidity vs Yul Benchmark
 
-The benchmark module should compare one pure Solidity implementation against one inline Yul implementation of the same logic.
+The benchmark module should compare one pure Solidity implementation against one
+inline Yul implementation of the same logic.
 
 Suggested benchmark focus:
+
 - array sum
 - min / max scan
 - hash helper
@@ -44,7 +48,8 @@ Template:
 
 ## L1 vs L2 Gas Comparison Template
 
-This section should remain a template until real measurements are rerun on the final branch and paired with explicit gas-price assumptions.
+This section should remain a template until real measurements are rerun on the
+final branch and paired with explicit gas-price assumptions.
 
 | Operation | Median Gas | Example L1 Cost | Example L2 Cost | Notes |
 | --- | --- | --- | --- | --- |
@@ -64,7 +69,7 @@ This section should remain a template until real measurements are rerun on the f
 - appending storage in upgradeable V2 rather than mutating V1 slot order
 - keeping inline assembly limited to isolated benchmark or helper hotspots
 
-## Follow-Up After Final Integration
+## Follow-Up For Final Submission
 
 - rerun `forge test --gas-report`
 - record per-operation medians

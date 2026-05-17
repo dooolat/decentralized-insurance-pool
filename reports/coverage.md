@@ -8,6 +8,7 @@ forge coverage
 
 Result:
 
+- `forge test`: `134 passed, 0 failed, 0 skipped`
 - Line coverage: `93.58% (758/810)`
 - Statement coverage: `92.65% (781/843)`
 - Branch coverage: `67.21% (82/122)`
