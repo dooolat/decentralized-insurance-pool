@@ -141,7 +141,8 @@ contract Deploy is Script {
             core.oracleAdapter,
             config.initialOwner
         );
-        core.insuranceAmm = new InsuranceAMM();
+        core.insuranceAmm =
+            new InsuranceAMM(config.collateralAsset, address(core.governanceToken));
     }
 
     function _deployGovernance(
