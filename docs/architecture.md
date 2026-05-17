@@ -1,4 +1,4 @@
-# Architecture Update (Day 4)
+# Architecture Overview
 
 ## Component Diagram
 

@@ -1,8 +1,11 @@
-# Security Audit Update (Day 4)
+# Security Audit Report
 
 ## Scope Status
 
-This document is still an in-progress audit companion for the course project. It focuses on the protocol design and the currently implemented contract set. Final findings should only be written after the last integration and test pass.
+This document is an audit companion for the course project. It focuses on the
+protocol design and the currently implemented contract set. Any tool-derived
+finding summary should only be added after the relevant command is actually run
+on the final branch.
 
 ## Centralization Analysis
 
@@ -20,12 +23,14 @@ This document is still an in-progress audit companion for the course project. It
 ## Reentrancy Discussion
 
 Key surfaces:
+
 - vault withdrawals
 - claim payouts
 - AMM swaps / liquidity removal
 - policy purchase flows that transfer funds and update accounting
 
 Expected mitigation pattern:
+
 - checks-effects-interactions ordering
 - explicit reentrancy guards where re-entry could combine token callbacks with mutable accounting
 
@@ -39,7 +44,7 @@ Expected mitigation pattern:
 
 - Chainlink reduces single-source manipulation risk, but each feed still needs semantic review.
 - Governance must ensure the chosen feed actually represents the insured event and not a loosely related proxy.
-- Feed depeg scenarios are part of the protocol’s domain model and should be reflected in threshold design, not ignored as out-of-scope.
+- Feed depeg scenarios are part of the protocol's domain model and should be reflected in threshold design, not ignored as out-of-scope.
 
 ## Double-Claim Risk
 
@@ -68,14 +73,14 @@ Expected mitigation pattern:
 ### Proposal spam
 
 - A non-trivial proposal threshold helps, but UI filtering and proposer accountability still matter.
-- Draft governance docs should specify why `1%` was chosen and what trade-off it makes.
+- Governance docs should explain why `1%` was chosen and what trade-off it makes.
 
 ### Timelock bypass
 
 - Final deployment verification must check that no backdoor owner/admin remains outside the timelock path.
 - Any helper role granted directly to a deployer wallet after setup should be considered a critical issue until removed.
 
-## Day 4 Follow-Up Checklist
+## Follow-Up Checklist
 
 - confirm claim payout ordering after the final insurance-flow merge
 - review AMM slippage and reserve update logic with fuzz/invariant coverage
