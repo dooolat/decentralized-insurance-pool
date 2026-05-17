@@ -23,7 +23,7 @@ import {
 import { knownFrontendErrors, toReadableError } from "./lib/errors";
 
 export default function App() {
-  const [status, setStatus] = useState<string>("No protocol action prepared yet.");
+  const [status, setStatus] = useState<string>("No protocol action submitted yet.");
 
   const contractSummary = useMemo(() => Object.entries(contractPlaceholders), []);
 
@@ -38,13 +38,13 @@ export default function App() {
     >
       <header style={{ marginBottom: "1.5rem" }}>
         <p style={{ textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b" }}>
-          Day 5 Frontend Integration Preview
+          Frontend Integration UI
         </p>
         <h1 style={{ marginBottom: "0.75rem" }}>Decentralized Insurance Pool</h1>
         <p style={{ color: "#334155", lineHeight: 1.6 }}>
-          This integrated frontend payload keeps Murat&apos;s dashboard read components and the
-          first protocol action surfaces in one place. Contract addresses and write wiring remain
-          placeholders until the protocol is deployed and the draft smart-contract PRs are merged.
+          This interface combines dashboard read components, governance previews, and first
+          protocol action forms in one place. Contract addresses, ABI wiring, and subgraph
+          endpoint values remain placeholders until a real Base Sepolia deployment is completed.
         </p>
       </header>
 
@@ -53,7 +53,7 @@ export default function App() {
           walletName="Injected wallet"
           connectionState="wrong-network"
           targetNetwork={targetChain.name}
-          helperText="Connect flow is still a placeholder. Wrong-network and connection states stay visible until live wallet wiring is finished."
+          helperText="Wallet connection is shown as an integration preview. Wrong-network and connection states remain visible until deployed addresses are wired into the app."
         />
       </section>
 
@@ -124,8 +124,8 @@ export default function App() {
         <article style={panelStyle}>
           <h2 style={{ marginTop: 0 }}>Contract Config Placeholders</h2>
           <p style={{ color: "#475569", marginTop: 0 }}>
-            All addresses below are placeholders only and must be replaced after a real Base
-            Sepolia deployment.
+            All addresses below are placeholders only. Replace them after a real Base Sepolia
+            deployment and verification pass.
           </p>
           <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
             {contractSummary.map(([key, value]) => (
@@ -179,13 +179,13 @@ export default function App() {
               <div>
                 <strong>Proposal #{proposal.id}</strong>
                 <p style={listCopyStyle}>
-                  {proposal.title} • {proposal.state}
+                  {proposal.title} | {proposal.state}
                 </p>
               </div>
             </div>
           ))}
           <p style={{ color: "#475569", marginBottom: 0 }}>
-            Subgraph network: <strong>{subgraphManifestNotes.network}</strong> • Deployment:{" "}
+            Subgraph network: <strong>{subgraphManifestNotes.network}</strong> | Deployment:{" "}
             <strong>{subgraphManifestNotes.deployment}</strong>
           </p>
         </article>

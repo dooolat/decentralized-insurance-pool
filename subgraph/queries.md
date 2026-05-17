@@ -1,6 +1,8 @@
 # Day 4 Subgraph Query Examples
 
-These queries are examples only. Replace manifest placeholder addresses and deploy the subgraph before wiring the frontend to a live endpoint.
+These are documented query examples for the local schema. Replace manifest
+placeholder addresses and deploy the subgraph before wiring the frontend to a
+live endpoint. This file does not claim a live hosted service URL.
 
 ## 1. Active policies
 

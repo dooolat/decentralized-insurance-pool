@@ -119,7 +119,7 @@ export const riskTypeOptions = riskTypePreview.map((risk) => ({
   id: risk.id,
   name: risk.name,
   premiumRateBps: risk.premiumRateBps,
-  status: risk.active ? "active placeholder until registry is read onchain" : "inactive placeholder",
+  status: risk.active ? "active preview until onchain registry reads are wired" : "inactive preview",
 })) as const;
 
 export const policyPreview: PolicyPreview[] = [
@@ -143,13 +143,13 @@ export const proposalPreview = [
   {
     id: "1",
     title: "Activate first risk type",
-    state: "Placeholder",
+    state: "Preview",
     note: "Replace with live governance proposals after deployment.",
   },
   {
     id: "2",
     title: "Tune vault reserve floor",
-    state: "Queued placeholder",
+    state: "Queued preview",
     note: "Displayed as a UI example until Governor events are indexed.",
   },
 ] as const;
