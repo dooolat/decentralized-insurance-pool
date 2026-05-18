@@ -28,20 +28,20 @@ export type PolicyPreview = {
   status: string;
 };
 
-export const contractPlaceholders = {
-  collateralToken: "TBD_AFTER_DEPLOYMENT",
-  governanceToken: "TBD_AFTER_DEPLOYMENT",
-  policyNft: "TBD_AFTER_DEPLOYMENT",
-  insuranceVault: "TBD_AFTER_DEPLOYMENT",
-  riskRegistry: "TBD_AFTER_DEPLOYMENT",
-  insurancePool: "TBD_AFTER_DEPLOYMENT",
-  claimManager: "TBD_AFTER_DEPLOYMENT",
-  insuranceAmm: "TBD_AFTER_DEPLOYMENT",
-  protocolGovernor: "TBD_AFTER_DEPLOYMENT",
-  protocolTimelock: "TBD_AFTER_DEPLOYMENT",
+export const protocolContracts = {
+  collateralToken: "0xF28cB6169666a343F6DA4A3f094E5053755e2299",
+  governanceToken: "0x9c16B4E48F6106D49eb16216fC3D3d6518703360",
+  policyNft: "0xD68a8eD3aFd2Ab6BedE82881719979d32c6eb823",
+  insuranceVault: "0xd994D34Ef43A528380B5324E8AC9a49F8feD22F5",
+  riskRegistry: "0xd79cB6fB67d5e528821A01662A035381CED1429b",
+  insurancePool: "0xD81fcdad2fD693F8C0EE2b31D30D0D7dA34992c3",
+  claimManager: "0xd745342115e82266f7F3db51D2e0AA747C2Ca7DE",
+  insuranceAmm: "0x4105e0F64aE288585bA8333FD485b46DC196758e",
+  protocolGovernor: "0xF38fdbce1F925333713349B54FDc24a816148157",
+  protocolTimelock: "0x3b0B2B1bc326C27c124BcE6c81Cc117De647b398",
 } as const;
 
-export const protocolContracts = contractPlaceholders;
+export const contractPlaceholders = protocolContracts;
 
 export const abiPlaceholders = {
   governanceToken: ["delegate(address)", "getVotes(address)"],
@@ -156,6 +156,6 @@ export const proposalPreview = [
 
 export const subgraphManifestNotes = {
   network: "base-sepolia",
-  deployment: "not deployed yet",
+  deployment: "contracts deployed; subgraph endpoint still pending",
   endpoint: "set after real Graph deployment",
 } as const;
