@@ -6,9 +6,9 @@ dataSources:
     name: InsurancePool
     network: base-sepolia
     source:
-      address: "0x0000000000000000000000000000000000000001"
+      address: "0xD81fcdad2fD693F8C0EE2b31D30D0D7dA34992c3"
       abi: InsurancePool
-      startBlock: 0
+      startBlock: 41647976
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -31,9 +31,9 @@ dataSources:
     name: ClaimManager
     network: base-sepolia
     source:
-      address: "0x0000000000000000000000000000000000000002"
+      address: "0xd745342115e82266f7F3db51D2e0AA747C2Ca7DE"
       abi: ClaimManager
-      startBlock: 0
+      startBlock: 41647976
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -52,9 +52,9 @@ dataSources:
     name: RiskRegistry
     network: base-sepolia
     source:
-      address: "0x0000000000000000000000000000000000000003"
+      address: "0xd79cB6fB67d5e528821A01662A035381CED1429b"
       abi: RiskRegistry
-      startBlock: 0
+      startBlock: 41647976
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -77,9 +77,9 @@ dataSources:
     name: InsuranceVault
     network: base-sepolia
     source:
-      address: "0x0000000000000000000000000000000000000004"
+      address: "0xd994D34Ef43A528380B5324E8AC9a49F8feD22F5"
       abi: InsuranceVault
-      startBlock: 0
+      startBlock: 41647976
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -98,9 +98,9 @@ dataSources:
     name: InsuranceAMM
     network: base-sepolia
     source:
-      address: "0x0000000000000000000000000000000000000005"
+      address: "0x4105e0F64aE288585bA8333FD485b46DC196758e"
       abi: InsuranceAMM
-      startBlock: 0
+      startBlock: 41647976
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -122,9 +122,9 @@ dataSources:
     name: ProtocolGovernor
     network: base-sepolia
     source:
-      address: "0x0000000000000000000000000000000000000006"
+      address: "0xF38fdbce1F925333713349B54FDc24a816148157"
       abi: ProtocolGovernor
-      startBlock: 0
+      startBlock: 41647976
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9

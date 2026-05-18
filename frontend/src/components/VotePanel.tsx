@@ -13,7 +13,7 @@ export function VotePanel({ onStatus }: Props) {
         <section style={panelStyle}>
             <h2 style={headingStyle}>Vote On Proposal</h2>
             <p style={copyStyle}>
-                Governor placeholder: <code>{contractPlaceholders.protocolGovernor}</code>
+                Governor contract: <code>{contractPlaceholders.protocolGovernor}</code>
             </p>
             <label style={labelStyle}>
                 Proposal ID
