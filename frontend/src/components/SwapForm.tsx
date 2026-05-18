@@ -13,7 +13,7 @@ export function SwapForm({ onStatus }: Props) {
         <section style={panelStyle}>
             <h2 style={headingStyle}>Swap Through AMM</h2>
             <p style={copyStyle}>
-                AMM action placeholder: <code>{contractPlaceholders.insuranceAmm}</code>
+                AMM contract: <code>{contractPlaceholders.insuranceAmm}</code>
             </p>
             <label style={labelStyle}>
                 Amount in

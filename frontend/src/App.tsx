@@ -43,8 +43,10 @@ export default function App() {
         <h1 style={{ marginBottom: "0.75rem" }}>Decentralized Insurance Pool</h1>
         <p style={{ color: "#334155", lineHeight: 1.6 }}>
           This interface combines dashboard read components, governance previews, and first
-          protocol action forms in one place. Contract addresses, ABI wiring, and subgraph
-          endpoint values remain placeholders until a real Base Sepolia deployment is completed.
+          protocol action forms in one place. Base Sepolia contract addresses are filled from a
+          real deployment. Governance handoff and deployment verification are complete, while
+          wallet transaction handlers, live reads, and the subgraph endpoint still need final
+          integration wiring.
         </p>
       </header>
 
@@ -53,7 +55,7 @@ export default function App() {
           walletName="Injected wallet"
           connectionState="wrong-network"
           targetNetwork={targetChain.name}
-          helperText="Wallet connection is shown as an integration preview. Wrong-network and connection states remain visible until deployed addresses are wired into the app."
+          helperText="Wallet connection is still shown as an integration preview. Wrong-network and connection states remain visible until live wallet actions are wired into the deployed contract addresses."
         />
       </section>
 
@@ -122,10 +124,11 @@ export default function App() {
         }}
       >
         <article style={panelStyle}>
-          <h2 style={{ marginTop: 0 }}>Contract Config Placeholders</h2>
+          <h2 style={{ marginTop: 0 }}>Contract Config</h2>
           <p style={{ color: "#475569", marginTop: 0 }}>
-            All addresses below are placeholders only. Replace them after a real Base Sepolia
-            deployment and verification pass.
+            These addresses come from the current Base Sepolia deployment. Governance handoff and
+            deployment verification are complete, while full frontend transaction wiring is still
+            pending.
           </p>
           <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
             {contractSummary.map(([key, value]) => (
