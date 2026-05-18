@@ -1,161 +1,88 @@
-export type DashboardMetric = {
-  label: string;
-  value: string;
-  helper: string;
-};
+import { baseSepolia } from "wagmi/chains";
+import { parseAbi } from "viem";
 
-export type VaultSnapshot = {
-  shares: string;
-  totalAssets: string;
-  freeLiquidity: string;
-  reservedCoverage: string;
-};
+export const TARGET_CHAIN = baseSepolia;
 
-export type RiskTypePreview = {
-  id: number;
-  name: string;
-  premiumRateBps: number;
-  maxCoverage: string;
-  triggerThreshold: string;
-  active: boolean;
-};
-
-export type PolicyPreview = {
-  policyId: number;
-  buyer: string;
-  coverage: string;
-  premium: string;
-  status: string;
-};
-
-export const protocolContracts = {
-  collateralToken: "0xF28cB6169666a343F6DA4A3f094E5053755e2299",
-  governanceToken: "0x9c16B4E48F6106D49eb16216fC3D3d6518703360",
-  policyNft: "0xD68a8eD3aFd2Ab6BedE82881719979d32c6eb823",
-  insuranceVault: "0xd994D34Ef43A528380B5324E8AC9a49F8feD22F5",
-  riskRegistry: "0xd79cB6fB67d5e528821A01662A035381CED1429b",
-  insurancePool: "0xD81fcdad2fD693F8C0EE2b31D30D0D7dA34992c3",
-  claimManager: "0xd745342115e82266f7F3db51D2e0AA747C2Ca7DE",
-  insuranceAmm: "0x4105e0F64aE288585bA8333FD485b46DC196758e",
-  protocolGovernor: "0xF38fdbce1F925333713349B54FDc24a816148157",
-  protocolTimelock: "0x3b0B2B1bc326C27c124BcE6c81Cc117De647b398",
+export const addresses = {
+  collateralToken: import.meta.env.VITE_COLLATERAL_TOKEN_ADDRESS as `0x${string}` | undefined,
+  governanceToken: import.meta.env.VITE_GOVERNANCE_TOKEN_ADDRESS as `0x${string}` | undefined,
+  policyNft: import.meta.env.VITE_POLICY_NFT_ADDRESS as `0x${string}` | undefined,
+  insuranceVault: import.meta.env.VITE_INSURANCE_VAULT_ADDRESS as `0x${string}` | undefined,
+  riskRegistry: import.meta.env.VITE_RISK_REGISTRY_ADDRESS as `0x${string}` | undefined,
+  insurancePool: import.meta.env.VITE_INSURANCE_POOL_ADDRESS as `0x${string}` | undefined,
+  claimManager: import.meta.env.VITE_CLAIM_MANAGER_ADDRESS as `0x${string}` | undefined,
+  insuranceAmm: import.meta.env.VITE_INSURANCE_AMM_ADDRESS as `0x${string}` | undefined,
+  protocolGovernor: import.meta.env.VITE_PROTOCOL_GOVERNOR_ADDRESS as `0x${string}` | undefined,
+  protocolTimelock: import.meta.env.VITE_PROTOCOL_TIMELOCK_ADDRESS as `0x${string}` | undefined,
 } as const;
 
-export const contractPlaceholders = protocolContracts;
+export const subgraphUrl = import.meta.env.VITE_SUBGRAPH_URL as string | undefined;
+export const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as
+  | string
+  | undefined;
 
-export const abiPlaceholders = {
-  governanceToken: ["delegate(address)", "getVotes(address)"],
-  policyNft: ["ownerOf(uint256)", "tokenURI(uint256)"],
-  insuranceVault: [
-    "deposit(uint256 assets, address receiver)",
-    "withdraw(uint256 assets, address receiver, address owner)",
-  ],
-  riskRegistry: ["getRiskType(uint256)", "deactivateRiskType(uint256)"],
-  insurancePool: [
-    "buyPolicy(uint256 riskTypeId, uint256 coverageAmount, uint256 duration)",
-    "getPolicy(uint256 policyId)",
-  ],
-  claimManager: ["executeClaim(uint256 policyId)"],
-  insuranceAmm: [
-    "swapExactInput(address tokenIn, uint256 amountIn, uint256 minAmountOut, address recipient)",
-  ],
-  protocolGovernor: ["castVote(uint256 proposalId, uint8 support)"],
-  protocolTimelock: ["schedule(bytes32 id)", "execute(bytes32 id)"],
-} as const;
+export const erc20Abi = parseAbi([
+  "function balanceOf(address account) view returns (uint256)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint256 amount) returns (bool)",
+  "function decimals() view returns (uint8)",
+  "function symbol() view returns (string)",
+]);
 
-export const tokenMetrics: DashboardMetric[] = [
-  {
-    label: "Collateral Token Balance",
-    value: "0.00 USDC",
-    helper: "Placeholder card for the connected user's collateral balance.",
-  },
-  {
-    label: "Governance Voting Power",
-    value: "0.00 IGOV",
-    helper: "Placeholder card for delegated voting power once Governor reads are connected.",
-  },
-  {
-    label: "Claimable Policies",
-    value: "0",
-    helper: "Placeholder summary for policies that satisfy a claim trigger.",
-  },
-];
+export const governanceTokenAbi = parseAbi([
+  "function balanceOf(address account) view returns (uint256)",
+  "function delegates(address account) view returns (address)",
+  "function getVotes(address account) view returns (uint256)",
+  "function delegate(address delegatee)",
+]);
 
-export const vaultSnapshot: VaultSnapshot = {
-  shares: "0.00 IVS",
-  totalAssets: "0.00 USDC",
-  freeLiquidity: "0.00 USDC",
-  reservedCoverage: "0.00 USDC",
-};
+export const vaultAbi = parseAbi([
+  "function balanceOf(address account) view returns (uint256)",
+  "function totalAssets() view returns (uint256)",
+  "function maxWithdraw(address owner) view returns (uint256)",
+  "function deposit(uint256 assets, address receiver) returns (uint256)",
+  "function withdraw(uint256 assets, address receiver, address owner) returns (uint256)",
+]);
 
-export const riskTypePreview: RiskTypePreview[] = [
-  {
-    id: 1,
-    name: "STABLECOIN_DEPEG",
-    premiumRateBps: 180,
-    maxCoverage: "100,000 USDC",
-    triggerThreshold: "0.97 USD",
-    active: true,
-  },
-  {
-    id: 2,
-    name: "ASSET_PRICE_DROP",
-    premiumRateBps: 240,
-    maxCoverage: "250,000 USDC",
-    triggerThreshold: "85% TWAP",
-    active: true,
-  },
-  {
-    id: 3,
-    name: "LIQUIDATION_EVENT",
-    premiumRateBps: 120,
-    maxCoverage: "75,000 USDC",
-    triggerThreshold: "Protocol-defined event",
-    active: false,
-  },
-];
+export const riskRegistryAbi = parseAbi([
+  "function riskTypeCount() view returns (uint256)",
+  "function getRiskType(uint256 riskTypeId) view returns (string name, uint16 premiumRateBps, uint256 maxCoverage, address oracleFeed, uint256 triggerThreshold, uint256 stalenessLimit, bool active)",
+]);
 
-export const riskTypeOptions = riskTypePreview.map((risk) => ({
-  id: risk.id,
-  name: risk.name,
-  premiumRateBps: risk.premiumRateBps,
-  status: risk.active ? "active preview until onchain registry reads are wired" : "inactive preview",
-})) as const;
+export const insurancePoolAbi = parseAbi([
+  "function getActivePolicies() view returns ((uint256 policyId, address buyer, uint256 riskTypeId, uint256 premium, uint256 coverageAmount, uint256 startTime, uint256 endTime, uint8 status)[])",
+  "function nextPolicyId() view returns (uint256)",
+  "function buyPolicy(uint256 riskTypeId, uint256 coverageAmount, uint256 duration) returns (uint256)",
+]);
 
-export const policyPreview: PolicyPreview[] = [
-  {
-    policyId: 7,
-    buyer: "0xBuyer...1234",
-    coverage: "1,000 USDC",
-    premium: "24 USDC",
-    status: "Active",
-  },
-  {
-    policyId: 8,
-    buyer: "0xBuyer...1234",
-    coverage: "2,500 USDC",
-    premium: "52 USDC",
-    status: "Placeholder",
-  },
-];
+export const policyNftAbi = parseAbi([
+  "function ownerOf(uint256 tokenId) view returns (address)",
+  "function tokenURI(uint256 tokenId) view returns (string)",
+]);
 
-export const proposalPreview = [
-  {
-    id: "1",
-    title: "Activate first risk type",
-    state: "Preview",
-    note: "Replace with live governance proposals after deployment.",
-  },
-  {
-    id: "2",
-    title: "Tune vault reserve floor",
-    state: "Queued preview",
-    note: "Displayed as a UI example until Governor events are indexed.",
-  },
-] as const;
+export const claimManagerAbi = parseAbi([
+  "function executeClaim(uint256 policyId) returns (bool paid, uint256 payoutAmount)",
+]);
 
-export const subgraphManifestNotes = {
-  network: "base-sepolia",
-  deployment: "contracts deployed; subgraph endpoint still pending",
-  endpoint: "set after real Graph deployment",
-} as const;
+export const insuranceAmmAbi = parseAbi([
+  "function getReserves() view returns (uint112 reserve0, uint112 reserve1)",
+  "function swapExactInput(address tokenIn, uint256 amountIn, uint256 minAmountOut, address recipient) returns (uint256)",
+]);
+
+export const governorAbi = parseAbi([
+  "function castVote(uint256 proposalId, uint8 support) returns (uint256)",
+]);
+
+export function hasCoreAddresses(): boolean {
+  return Boolean(
+    addresses.collateralToken &&
+      addresses.governanceToken &&
+      addresses.policyNft &&
+      addresses.insuranceVault &&
+      addresses.riskRegistry &&
+      addresses.insurancePool &&
+      addresses.claimManager &&
+      addresses.insuranceAmm &&
+      addresses.protocolGovernor
+  );
+}
