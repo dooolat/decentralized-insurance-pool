@@ -1,0 +1,11 @@
+{
+  "name": "decentralized-insurance-pool",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Final project repository for Option E - Decentralized Insurance Pool.",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "frontend:dev": "npm --prefix frontend run dev"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "deploymentBlock": 41647976,
+  "contracts": {
+    "collateralToken": "0xF28cB6169666a343F6DA4A3f094E5053755e2299",
+    "governanceToken": "0x9c16B4E48F6106D49eb16216fC3D3d6518703360",
+    "policyNft": "0xD68a8eD3aFd2Ab6BedE82881719979d32c6eb823",
+    "insuranceVault": "0xd994D34Ef43A528380B5324E8AC9a49F8feD22F5",
+    "riskRegistry": "0xd79cB6fB67d5e528821A01662A035381CED1429b",
+    "oracleAdapter": "0xA19Ec3D90e8427b1020A7cCE89a15D4c72168E88",
+    "insurancePool": "0xD81fcdad2fD693F8C0EE2b31D30D0D7dA34992c3",
+    "claimManager": "0xd745342115e82266f7F3db51D2e0AA747C2Ca7DE",
+    "insuranceAmm": "0x4105e0F64aE288585bA8333FD485b46DC196758e",
+    "protocolTimelock": "0x3b0B2B1bc326C27c124BcE6c81Cc117De647b398",
+    "protocolGovernor": "0xF38fdbce1F925333713349B54FDc24a816148157",
+    "insuranceFactory": "0x139d04Fd7A15b1C73e899841DA96440aa1CAfe6f",
+    "upgradeableImplementation": "0xad404a9Ce41de75562C2B0f43937fd893e56582e",
+    "upgradeableProxy": "0x0F52101e4521b14f50ed1f42a72cd8B572110A63",
+    "assemblyBenchmark": "0xE8a56CD1966f4D1dc40654cDcf1D013978D759B6"
+  },
+  "note": "Contracts were deployed on Base Sepolia, ownership was transferred to the timelock, and deployment verification passed locally. Subgraph endpoint and full frontend wallet wiring remain pending."
+}

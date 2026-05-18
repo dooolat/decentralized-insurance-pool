@@ -1,0 +1,29 @@
+[profile.default]
+src = "contracts"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+fs_permissions = [{ access = "read-write", path = "./" }]
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+multiline_func_header = "params_first"
+quote_style = "double"
+number_underscore = "thousands"
+
+[fuzz]
+runs = 256
+
+[invariant]
+runs = 128
+depth = 64
+fail_on_revert = true
