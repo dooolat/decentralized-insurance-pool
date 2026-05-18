@@ -1,0 +1,235 @@
+:root {
+  color-scheme: light;
+  --bg: #f4efe6;
+  --panel: rgba(255, 250, 241, 0.82);
+  --panel-border: rgba(63, 48, 34, 0.12);
+  --text: #22160c;
+  --muted: #6f5a49;
+  --accent: #b6461b;
+  --accent-2: #0a7d68;
+  --warn: #9f3a1e;
+  --shadow: 0 20px 60px rgba(49, 30, 14, 0.12);
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(182, 70, 27, 0.22), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(10, 125, 104, 0.18), transparent 28%),
+    linear-gradient(180deg, #fff8ef 0%, #efe6d7 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  background: linear-gradient(135deg, var(--accent), #dc6f35);
+  color: white;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+input,
+select {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  padding: 0.85rem 0.95rem;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.app-shell {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.hero-strip {
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), #efb14b, var(--accent-2));
+  margin-bottom: 1.5rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 2.1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  font-size: 0.78rem;
+}
+
+.lede {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
+.wallet-card,
+.panel {
+  backdrop-filter: blur(14px);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+.wallet-card {
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.wallet-label {
+  margin: 0;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+}
+
+.stats-grid,
+.content-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+
+.stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.content-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.panel {
+  padding: 1.15rem;
+}
+
+.stat strong {
+  font-size: 1.5rem;
+}
+
+.panel h2,
+.panel h3 {
+  margin-top: 0;
+}
+
+.panel label {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.banner {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  font-weight: 600;
+}
+
+.banner.error {
+  background: rgba(159, 58, 30, 0.13);
+  color: var(--warn);
+}
+
+.banner.success {
+  background: rgba(10, 125, 104, 0.12);
+  color: var(--accent-2);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pill.ok {
+  background: rgba(10, 125, 104, 0.13);
+  color: var(--accent-2);
+}
+
+.pill.warn {
+  background: rgba(182, 70, 27, 0.14);
+  color: var(--accent);
+}
+
+.warning-panel {
+  margin-top: 1.5rem;
+}
+
+.list-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgba(63, 48, 34, 0.08);
+}
+
+.list-row:first-of-type {
+  border-top: 0;
+}
+
+.mono {
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+  word-break: break-all;
+}
+
+@media (max-width: 960px) {
+  .hero,
+  .stats-grid,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,38 +1,28 @@
-const KNOWN_ERROR_MESSAGES = [
-    "Transaction rejected in wallet.",
-    "Wrong network. Please switch to Base Sepolia.",
-    "Insufficient balance or allowance for this action.",
-    "Oracle data is stale. Try again after the feed updates.",
-    "That risk type is inactive.",
-    "Claim condition not met for that policy."
-] as const;
-
 export function toReadableError(error: unknown): string {
-    const message = error instanceof Error ? error.message : String(error);
-    const lowered = message.toLowerCase();
+  const message = error instanceof Error ? error.message : String(error);
 
-    if (lowered.includes("user rejected") || lowered.includes("rejected")) {
-        return KNOWN_ERROR_MESSAGES[0];
-    }
-    if (lowered.includes("wrong network") || lowered.includes("chain")) {
-        return KNOWN_ERROR_MESSAGES[1];
-    }
-    if (lowered.includes("insufficient")) {
-        return KNOWN_ERROR_MESSAGES[2];
-    }
-    if (message.includes("StaleOraclePrice")) {
-        return KNOWN_ERROR_MESSAGES[3];
-    }
-    if (message.includes("InactiveRiskType")) {
-        return KNOWN_ERROR_MESSAGES[4];
-    }
-    if (message.includes("ClaimConditionNotMet") || message.includes("ClaimRejected")) {
-        return KNOWN_ERROR_MESSAGES[5];
-    }
+  if (message.includes("User rejected") || message.includes("rejected")) {
+    return "Transaction rejected in wallet.";
+  }
+  if (message.includes("wrong network") || message.includes("chain")) {
+    return "Wrong network. Please switch to Base Sepolia.";
+  }
+  if (message.includes("insufficient")) {
+    return "Insufficient balance or allowance for this action.";
+  }
+  if (message.includes("InactiveRiskType")) {
+    return "That risk type is inactive.";
+  }
+  if (message.includes("StaleOraclePrice")) {
+    return "Oracle data is stale. Try again after the feed updates.";
+  }
+  if (message.includes("ClaimConditionNotMet") || message.includes("ClaimRejected")) {
+    return "Claim condition not met for that policy.";
+  }
+  if (message.includes("CoverageExceeds")) {
+    return "Requested coverage exceeds the pool or risk capacity.";
+  }
 
-    return "Transaction failed. Check wallet confirmation, network, and contract configuration.";
+  return "Transaction failed. Check wallet confirmation and contract configuration.";
 }
 
-export function knownFrontendErrors(): readonly string[] {
-    return KNOWN_ERROR_MESSAGES;
-}
