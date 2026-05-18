@@ -78,9 +78,10 @@ The repository includes subgraph files under `subgraph/`:
 - `subgraph/src/mappings.ts`
 - `subgraph/queries.md`
 
-The documented subgraph structure covers 8 entities with 6 query examples.
-Manifest addresses remain placeholders until a real deployment is completed, so
-this repository does not claim a live deployed subgraph endpoint.
+The documented subgraph structure covers 8 entities with 6 query examples. The
+subgraph manifest is updated with the recorded Base Sepolia deployment
+addresses. A live hosted subgraph endpoint is not claimed unless it is deployed
+separately.
 
 ## Deployment Status
 
@@ -90,22 +91,24 @@ Deployment scripts are included and parameterized:
 - `script/VerifyDeployment.s.sol`
 - `script/UpgradeV2.s.sol`
 
-`deployments/base-sepolia.json` is a template file unless a real deployment and
-verification pass has been completed. This repository does not claim live
-deployed or verified addresses by default.
+Base Sepolia deployment addresses are recorded in
+`deployments/base-sepolia.json`. The frontend contract configuration and
+subgraph manifest are wired to those recorded addresses. This repository does
+not add fake explorer verification links or claim a separate live subgraph
+deployment.
 
 ## Testing Status
 
 Latest validated `develop` results:
 
 - `forge test`: `134 passed, 0 failed, 0 skipped`
-- `forge coverage` line coverage: `93.58% (758/810)`
+- `forge coverage` line coverage: `93.60% (760/812)`
+- frontend `npm run build`: passed
 - fork tests are included in the suite, but live external fork execution still
   requires RPC URLs such as `MAINNET_RPC_URL` or `SEPOLIA_RPC_URL`
 
 ## Known Limitations
 
-- frontend contract addresses remain placeholders until a real L2 deployment is completed
-- subgraph manifest addresses remain placeholders until a real L2 deployment is completed
-- deployment verification status depends on a real network broadcast and verification pass
+- the frontend contract configuration is updated with the recorded Base Sepolia deployment addresses, and the production build passes; full wallet-based live interaction should be verified with a funded testnet wallet before demonstration
+- the subgraph manifest is updated with the recorded Base Sepolia deployment addresses; a live hosted subgraph endpoint is not claimed unless deployed separately
 - Slither output should only be treated as final after `slither .` is actually rerun on the final branch
