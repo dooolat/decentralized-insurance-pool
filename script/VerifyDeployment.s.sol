@@ -30,8 +30,10 @@ contract VerifyDeployment is Script {
         require(governor.votingDelay() == 1 days, "voting delay mismatch");
         require(governor.votingPeriod() == 1 weeks, "voting period mismatch");
         require(governor.proposalThreshold() == initialGovSupply / 100, "threshold mismatch");
+        uint48 currentClock = IClockLike(address(governor.token())).clock();
+        require(currentClock > 0, "governance clock not initialized");
         require(
-            governor.quorum(IClockLike(address(governor.token())).clock()) == (initialGovSupply * 4) / 100,
+            governor.quorum(uint256(currentClock) - 1) == (initialGovSupply * 4) / 100,
             "quorum mismatch"
         );
 
