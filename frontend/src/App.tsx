@@ -9,7 +9,7 @@ import {
   useSwitchChain,
   useWriteContract,
 } from "wagmi";
-import { Address } from "viem";
+import { Address, createPublicClient, http } from "viem";
 import {
   addresses,
   claimManagerAbi,
@@ -55,8 +55,21 @@ type PolicyView = {
   status: string;
 };
 
+type SubgraphRiskTypeView = {
+  id: string;
+  name: string;
+  active: boolean;
+};
+
 const collateralDecimals = Number(import.meta.env.VITE_COLLATERAL_TOKEN_DECIMALS ?? 6);
 const governanceDecimals = Number(import.meta.env.VITE_GOVERNANCE_TOKEN_DECIMALS ?? 18);
+const rpcUrl = import.meta.env.VITE_BASE_SEPOLIA_RPC_URL as string | undefined;
+const publicClient = rpcUrl
+  ? createPublicClient({
+      chain: TARGET_CHAIN,
+      transport: http(rpcUrl),
+    })
+  : null;
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -68,19 +81,21 @@ function App() {
 
   const [error, setError] = useState<string>("");
   const [statusMessage, setStatusMessage] = useState<string>("");
-  const [depositAmount, setDepositAmount] = useState("100");
-  const [withdrawAmount, setWithdrawAmount] = useState("50");
-  const [coverageAmount, setCoverageAmount] = useState("1000");
+  const [depositAmount, setDepositAmount] = useState("0.001");
+  const [withdrawAmount, setWithdrawAmount] = useState("0.001");
+  const [coverageAmount, setCoverageAmount] = useState("0.001");
   const [durationDays, setDurationDays] = useState("30");
   const [claimPolicyId, setClaimPolicyId] = useState("1");
-  const [swapAmount, setSwapAmount] = useState("100");
-  const [swapMinAmountOut, setSwapMinAmountOut] = useState("1");
+  const [swapAmount, setSwapAmount] = useState("0.001");
+  const [swapMinAmountOut, setSwapMinAmountOut] = useState("0.0009");
   const [voteProposalId, setVoteProposalId] = useState("");
   const [voteSupport, setVoteSupport] = useState<0 | 1 | 2>(1);
   const [riskTypes, setRiskTypes] = useState<RiskTypeView[]>([]);
+  const [subgraphRiskTypes, setSubgraphRiskTypes] = useState<SubgraphRiskTypeView[]>([]);
   const [subgraphPolicies, setSubgraphPolicies] = useState<PolicyView[]>([]);
   const [subgraphProposals, setSubgraphProposals] = useState<ProposalView[]>([]);
   const [ownedPolicyIds, setOwnedPolicyIds] = useState<number[]>([]);
+  const [fallbackCollateralBalance, setFallbackCollateralBalance] = useState<bigint | undefined>();
 
   const onActionError = (err: unknown) => {
     setError(toReadableError(err));
@@ -155,21 +170,6 @@ function App() {
     query: { enabled: Boolean(addresses.insurancePool && address) },
   });
 
-  const riskCalls = useMemo(() => {
-    const count = Number(riskTypeCount.data ?? 0n);
-    return Array.from({ length: count }, (_, index) => ({
-      address: addresses.riskRegistry,
-      abi: riskRegistryAbi,
-      functionName: "getRiskType" as const,
-      args: [BigInt(index + 1)],
-    }));
-  }, [riskTypeCount.data]);
-
-  const riskResults = useReadContracts({
-    contracts: riskCalls,
-    query: { enabled: riskCalls.length > 0 },
-  });
-
   const nftOwnerCalls = useMemo(() => {
     if (!address || !addresses.policyNft || !nextPolicyId.data) return [];
     const count = Number(nextPolicyId.data) - 1;
@@ -187,26 +187,97 @@ function App() {
   });
 
   useEffect(() => {
-    if (!riskResults.data) return;
-    const parsed = riskResults.data
-      .map((entry, index) => {
-        const tuple = entry.result as
-          | readonly [string, number, bigint, Address, bigint, bigint, boolean]
-          | undefined;
-        if (!tuple) return null;
-        return {
-          id: index + 1,
-          name: tuple[0],
-          premiumRateBps: tuple[1],
-          maxCoverage: tuple[2],
-          triggerThreshold: tuple[4],
-          stalenessLimit: tuple[5],
-          active: tuple[6],
-        } satisfies RiskTypeView;
-      })
-      .filter(Boolean) as RiskTypeView[];
-    setRiskTypes(parsed);
-  }, [riskResults.data]);
+    let cancelled = false;
+
+    const tokenAddress = addresses.collateralToken;
+
+    if (!publicClient || !address || !tokenAddress) {
+      setFallbackCollateralBalance(undefined);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const run = async () => {
+      try {
+        const balance = await publicClient.readContract({
+          address: tokenAddress,
+          abi: erc20Abi,
+          functionName: "balanceOf",
+          args: [address],
+        });
+
+        if (!cancelled) {
+          setFallbackCollateralBalance(balance as bigint);
+        }
+      } catch {
+        if (!cancelled) {
+          setFallbackCollateralBalance(undefined);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [address]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const count = Number(riskTypeCount.data ?? 0n);
+    const registryAddress = addresses.riskRegistry;
+
+    if (!publicClient || !registryAddress || count === 0) {
+      setRiskTypes([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const run = async () => {
+      try {
+        const fetched = await Promise.all(
+          Array.from({ length: count }, (_, index) =>
+            publicClient.readContract({
+              address: registryAddress,
+              abi: riskRegistryAbi,
+              functionName: "getRiskType",
+              args: [BigInt(index + 1)],
+            })
+          )
+        );
+
+        if (cancelled) return;
+
+        const parsed = fetched.map((tuple, index) => {
+          const value = tuple as readonly [string, number, bigint, Address, bigint, bigint, boolean];
+          return {
+            id: index + 1,
+            name: value[0],
+            premiumRateBps: value[1],
+            maxCoverage: value[2],
+            triggerThreshold: value[4],
+            stalenessLimit: value[5],
+            active: value[6],
+          } satisfies RiskTypeView;
+        });
+
+        setRiskTypes(parsed);
+      } catch {
+        if (!cancelled) {
+          setRiskTypes([]);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [riskTypeCount.data]);
 
   useEffect(() => {
     if (!address || !nftOwners.data) return;
@@ -235,6 +306,11 @@ function App() {
                   premium
                   status
                 }
+                riskTypes(first: 20, orderBy: updatedAt, orderDirection: desc) {
+                  id
+                  name
+                  active
+                }
                 governanceProposals(first: 10, orderBy: createdAt, orderDirection: desc) {
                   proposalId
                   description
@@ -248,6 +324,7 @@ function App() {
           }),
         });
         const payload = await response.json();
+        setSubgraphRiskTypes(payload.data?.riskTypes ?? []);
         setSubgraphPolicies(payload.data?.policies ?? []);
         setSubgraphProposals(payload.data?.governanceProposals ?? []);
       } catch {
@@ -265,33 +342,67 @@ function App() {
     await switchChainAsync({ chainId: TARGET_CHAIN.id });
   };
 
+  const waitForTransaction = async (hash: `0x${string}`) => {
+    if (!publicClient) return;
+    await publicClient.waitForTransactionReceipt({ hash });
+  };
+
   const ensureAllowance = async (
     tokenAddress: Address | undefined,
     spender: Address | undefined,
     amount: bigint
-  ) => {
-    if (!address || !tokenAddress || !spender) return;
-    await writeContractAsync({
+  ): Promise<boolean> => {
+    if (!address || !tokenAddress || !spender) return true;
+    if (publicClient) {
+      try {
+        const currentAllowance = (await publicClient.readContract({
+          address: tokenAddress,
+          abi: erc20Abi,
+          functionName: "allowance",
+          args: [address, spender],
+        })) as bigint;
+
+        if (currentAllowance >= amount) {
+          return true;
+        }
+      } catch {
+        // Fall through to approval transaction if the read fails.
+      }
+    }
+
+    const hash = await writeContractAsync({
       address: tokenAddress,
       abi: erc20Abi,
       functionName: "approve",
       args: [spender, amount],
     });
+    await waitForTransaction(hash);
+    return false;
   };
 
   const handleDeposit = async () => {
     try {
       setError("");
+      setStatusMessage("");
       await requireTargetChain();
       const assets = parseTokenInput(depositAmount, collateralDecimals);
-      await ensureAllowance(addresses.collateralToken, addresses.insuranceVault, assets);
-      await writeContractAsync({
+      const allowanceReady = await ensureAllowance(
+        addresses.collateralToken,
+        addresses.insuranceVault,
+        assets
+      );
+      if (!allowanceReady) {
+        setStatusMessage("Collateral approval confirmed. Click Deposit again to submit.");
+        return;
+      }
+      const hash = await writeContractAsync({
         address: addresses.insuranceVault!,
         abi: vaultAbi,
         functionName: "deposit",
         args: [assets, address!],
       });
-      setStatusMessage("Vault deposit submitted.");
+      await waitForTransaction(hash);
+      setStatusMessage("Vault deposit confirmed.");
     } catch (err) {
       onActionError(err);
     }
@@ -300,15 +411,17 @@ function App() {
   const handleWithdraw = async () => {
     try {
       setError("");
+      setStatusMessage("");
       await requireTargetChain();
       const assets = parseTokenInput(withdrawAmount, collateralDecimals);
-      await writeContractAsync({
+      const hash = await writeContractAsync({
         address: addresses.insuranceVault!,
         abi: vaultAbi,
         functionName: "withdraw",
         args: [assets, address!, address!],
       });
-      setStatusMessage("Vault withdrawal submitted.");
+      await waitForTransaction(hash);
+      setStatusMessage("Vault withdrawal confirmed.");
     } catch (err) {
       onActionError(err);
     }
@@ -317,16 +430,26 @@ function App() {
   const handleBuyPolicy = async () => {
     try {
       setError("");
+      setStatusMessage("");
       await requireTargetChain();
       const coverage = parseTokenInput(coverageAmount, collateralDecimals);
-      await ensureAllowance(addresses.collateralToken, addresses.insurancePool, coverage);
-      await writeContractAsync({
+      const allowanceReady = await ensureAllowance(
+        addresses.collateralToken,
+        addresses.insurancePool,
+        coverage
+      );
+      if (!allowanceReady) {
+        setStatusMessage("Collateral approval confirmed. Click Buy Insurance again to submit.");
+        return;
+      }
+      const hash = await writeContractAsync({
         address: addresses.insurancePool!,
         abi: insurancePoolAbi,
         functionName: "buyPolicy",
         args: [1n, coverage, BigInt(Number(durationDays) * 24 * 60 * 60)],
       });
-      setStatusMessage("Policy purchase submitted.");
+      await waitForTransaction(hash);
+      setStatusMessage("Policy purchase confirmed.");
     } catch (err) {
       onActionError(err);
     }
@@ -335,14 +458,16 @@ function App() {
   const handleExecuteClaim = async () => {
     try {
       setError("");
+      setStatusMessage("");
       await requireTargetChain();
-      await writeContractAsync({
+      const hash = await writeContractAsync({
         address: addresses.claimManager!,
         abi: claimManagerAbi,
         functionName: "executeClaim",
         args: [BigInt(claimPolicyId)],
       });
-      setStatusMessage("Claim execution submitted.");
+      await waitForTransaction(hash);
+      setStatusMessage("Claim execution confirmed.");
     } catch (err) {
       onActionError(err);
     }
@@ -351,17 +476,27 @@ function App() {
   const handleSwap = async () => {
     try {
       setError("");
+      setStatusMessage("");
       await requireTargetChain();
       const amountIn = parseTokenInput(swapAmount, collateralDecimals);
       const minAmountOut = parseTokenInput(swapMinAmountOut, governanceDecimals);
-      await ensureAllowance(addresses.collateralToken, addresses.insuranceAmm, amountIn);
-      await writeContractAsync({
+      const allowanceReady = await ensureAllowance(
+        addresses.collateralToken,
+        addresses.insuranceAmm,
+        amountIn
+      );
+      if (!allowanceReady) {
+        setStatusMessage("Collateral approval confirmed. Click Swap Through AMM again to submit.");
+        return;
+      }
+      const hash = await writeContractAsync({
         address: addresses.insuranceAmm!,
         abi: insuranceAmmAbi,
         functionName: "swapExactInput",
         args: [addresses.collateralToken!, amountIn, minAmountOut, address!],
       });
-      setStatusMessage("AMM swap submitted.");
+      await waitForTransaction(hash);
+      setStatusMessage("AMM swap confirmed.");
     } catch (err) {
       onActionError(err);
     }
@@ -370,14 +505,16 @@ function App() {
   const handleVote = async () => {
     try {
       setError("");
+      setStatusMessage("");
       await requireTargetChain();
-      await writeContractAsync({
+      const hash = await writeContractAsync({
         address: addresses.protocolGovernor!,
         abi: governorAbi,
         functionName: "castVote",
         args: [BigInt(voteProposalId), voteSupport],
       });
-      setStatusMessage("Governance vote submitted.");
+      await waitForTransaction(hash);
+      setStatusMessage("Governance vote confirmed.");
     } catch (err) {
       onActionError(err);
     }
@@ -443,7 +580,12 @@ function App() {
       <section className="stats-grid">
         <article className="panel stat">
           <h3>Collateral Balance</h3>
-          <strong>{formatToken(collateralBalance.data as bigint | undefined, collateralDecimals)}</strong>
+          <strong>
+            {formatToken(
+              (collateralBalance.data as bigint | undefined) ?? fallbackCollateralBalance,
+              collateralDecimals
+            )}
+          </strong>
         </article>
         <article className="panel stat">
           <h3>Voting Power</h3>
@@ -547,8 +689,8 @@ function App() {
       <section className="content-grid">
         <article className="panel">
           <h2>Risk Types</h2>
-          {riskTypes.length === 0 ? <p>No risk types loaded.</p> : null}
-          {riskTypes.map((risk) => (
+          {riskTypes.length === 0 && subgraphRiskTypes.length === 0 ? <p>No risk types loaded.</p> : null}
+          {riskTypes.length > 0 ? riskTypes.map((risk) => (
             <div key={risk.id} className="list-row">
               <div>
                 <strong>{risk.name}</strong>
@@ -556,6 +698,16 @@ function App() {
                   Rate: {risk.premiumRateBps} bps • Trigger: {risk.triggerThreshold.toString()} •
                   Staleness: {risk.stalenessLimit.toString()}s
                 </p>
+              </div>
+              <span className={risk.active ? "pill ok" : "pill warn"}>
+                {risk.active ? "Active" : "Inactive"}
+              </span>
+            </div>
+          )) : subgraphRiskTypes.map((risk) => (
+            <div key={risk.id} className="list-row">
+              <div>
+                <strong>{risk.name}</strong>
+                <p>Loaded from the indexed subgraph fallback.</p>
               </div>
               <span className={risk.active ? "pill ok" : "pill warn"}>
                 {risk.active ? "Active" : "Inactive"}
@@ -597,6 +749,8 @@ function App() {
                 <span className="mono">Loaded directly from the insurance pool contract.</span>
               </div>
             ))
+          ) : subgraphUrl ? (
+            <p>No indexed policies found yet.</p>
           ) : (
             <p>Set `VITE_SUBGRAPH_URL` to load indexed policy history from The Graph.</p>
           )}
@@ -604,8 +758,10 @@ function App() {
 
         <article className="panel">
           <h2>Governance Proposals</h2>
-          {subgraphProposals.length === 0 ? (
+          {!subgraphUrl ? (
             <p>Set `VITE_SUBGRAPH_URL` to load indexed proposal state from The Graph.</p>
+          ) : subgraphProposals.length === 0 ? (
+            <p>No governance proposals indexed yet.</p>
           ) : (
             subgraphProposals.map((proposal) => (
               <div key={proposal.proposalId} className="list-row">

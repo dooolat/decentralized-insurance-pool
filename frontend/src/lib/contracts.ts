@@ -1,25 +1,41 @@
 import { baseSepolia } from "wagmi/chains";
-import { parseAbi } from "viem";
+import { getAddress, isAddress, parseAbi } from "viem";
 
 export const TARGET_CHAIN = baseSepolia;
 
+function readEnvString(name: string): string | undefined {
+  const value = import.meta.env[name] as string | undefined;
+  if (!value) return undefined;
+  const normalized = value.replace(/\u200B/g, "").replace(/^\uFEFF/, "").trim();
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+function readEnvAddress(name: string): `0x${string}` | undefined {
+  const value = readEnvString(name);
+  if (!value) return undefined;
+
+  const normalized = value.replace(/\s+/g, "");
+  if (!/^0x[0-9a-fA-F]{40}$/.test(normalized)) return undefined;
+
+  const checksummed = getAddress(normalized.toLowerCase());
+  return isAddress(checksummed) ? checksummed : undefined;
+}
+
 export const addresses = {
-  collateralToken: import.meta.env.VITE_COLLATERAL_TOKEN_ADDRESS as `0x${string}` | undefined,
-  governanceToken: import.meta.env.VITE_GOVERNANCE_TOKEN_ADDRESS as `0x${string}` | undefined,
-  policyNft: import.meta.env.VITE_POLICY_NFT_ADDRESS as `0x${string}` | undefined,
-  insuranceVault: import.meta.env.VITE_INSURANCE_VAULT_ADDRESS as `0x${string}` | undefined,
-  riskRegistry: import.meta.env.VITE_RISK_REGISTRY_ADDRESS as `0x${string}` | undefined,
-  insurancePool: import.meta.env.VITE_INSURANCE_POOL_ADDRESS as `0x${string}` | undefined,
-  claimManager: import.meta.env.VITE_CLAIM_MANAGER_ADDRESS as `0x${string}` | undefined,
-  insuranceAmm: import.meta.env.VITE_INSURANCE_AMM_ADDRESS as `0x${string}` | undefined,
-  protocolGovernor: import.meta.env.VITE_PROTOCOL_GOVERNOR_ADDRESS as `0x${string}` | undefined,
-  protocolTimelock: import.meta.env.VITE_PROTOCOL_TIMELOCK_ADDRESS as `0x${string}` | undefined,
+  collateralToken: readEnvAddress("VITE_COLLATERAL_TOKEN_ADDRESS"),
+  governanceToken: readEnvAddress("VITE_GOVERNANCE_TOKEN_ADDRESS"),
+  policyNft: readEnvAddress("VITE_POLICY_NFT_ADDRESS"),
+  insuranceVault: readEnvAddress("VITE_INSURANCE_VAULT_ADDRESS"),
+  riskRegistry: readEnvAddress("VITE_RISK_REGISTRY_ADDRESS"),
+  insurancePool: readEnvAddress("VITE_INSURANCE_POOL_ADDRESS"),
+  claimManager: readEnvAddress("VITE_CLAIM_MANAGER_ADDRESS"),
+  insuranceAmm: readEnvAddress("VITE_INSURANCE_AMM_ADDRESS"),
+  protocolGovernor: readEnvAddress("VITE_PROTOCOL_GOVERNOR_ADDRESS"),
+  protocolTimelock: readEnvAddress("VITE_PROTOCOL_TIMELOCK_ADDRESS"),
 } as const;
 
-export const subgraphUrl = import.meta.env.VITE_SUBGRAPH_URL as string | undefined;
-export const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as
-  | string
-  | undefined;
+export const subgraphUrl = readEnvString("VITE_SUBGRAPH_URL");
+export const walletConnectProjectId = readEnvString("VITE_WALLETCONNECT_PROJECT_ID");
 
 export const erc20Abi = parseAbi([
   "function balanceOf(address account) view returns (uint256)",
